@@ -7,15 +7,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v2.4.2
+      - uses: actions/setup-node@v3.3.0
         with:
           node-version: '16'
       - name: setup git auth
         env:
           email: 'vinicius0809@gmail.com'
           username: 'vinicius0809'
-          access_token: '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'
+          access_token: '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'
         run: |
           git config --global credential.helper store
           echo "https://${access_token}:x-oauth-basic@github.com" > ~/.git-credentials
