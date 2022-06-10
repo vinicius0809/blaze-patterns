@@ -16,9 +16,9 @@
             <tr >
               <th>Horário</th>
               <template v-for="i in 4">
-                <th>Acertos</th>
-                <th>Erros</th>
-                <th>Diferença</th>
+                <th :key="'acertos'+i">Acertos</th>
+                <th :key="'erros' + i">Erros</th>
+                <th :key="'diferenca' + i">Diferença</th>
               </template>
               <th>Total</th>
             </tr>

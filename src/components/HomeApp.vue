@@ -1,13 +1,13 @@
 <template>
   <div id="app">
-    <plays
+    <PatternPlays
       :plays="plays"
-    ></plays>
+    ></PatternPlays>
   </div>
 </template>
 
 <script>
-import Plays from "./Plays";
+import PatternPlays from "./PatternPlays";
 import { db } from "./../db.js";
 export default {
   data() {
@@ -16,7 +16,7 @@ export default {
     };
   },
   components: {
-    plays: Plays,
+    PatternPlays
   },
 
   firestore:{

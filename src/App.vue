@@ -52,7 +52,7 @@
 
     <v-content>
       <v-container fluid>
-        <app-Buy></app-Buy>
+        <HomeApp></HomeApp>
       </v-container>
     </v-content>
 
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import Buy from "./components/Buy.vue";
+import HomeApp from "./components/HomeApp.vue";
 export default {
   props: {
     source: String,
@@ -111,7 +111,7 @@ export default {
     },
   },
   components: {
-    appBuy: Buy,
+    HomeApp
   },
 };
 </script>
