@@ -15,21 +15,14 @@
             </tr>
             <tr >
               <th>Horário</th>
-              <th>Acertos</th>
-              <th>Erros</th>
-              <th> Diferença</th>
-              <th>Acertos</th>
-              <th>Erros</th>
-              <th> Diferença</th>
-              <th>Acertos</th>
-              <th>Erros</th>
-              <th> Diferença</th>
-              <th>Acertos</th>
-              <th>Erros</th>
-              <th> Diferença</th>
+              <template v-for="i in 4">
+                <th>Acertos</th>
+                <th>Erros</th>
+                <th>Diferença</th>
+              </template>
               <th>Total</th>
             </tr>
-            <tr v-for="(index) in 23" :key="index">
+            <tr v-for="(n, index) in 24" :key="index" :class="getHourClass(index)">
               <td>{{index}}</td>
               <td class="darkGrayBG">{{getPlayDiff(plays[0], index).totalCorrect}}</td>
               <td class="darkGrayBG">{{getPlayDiff(plays[0], index).wrongPlays}}</td>
@@ -51,9 +44,7 @@
                <td colspan="3" :class="getBGColor(getTotalByPattern(plays[1]))">{{getTotalByPattern(plays[1])}}</td>
                <td colspan="3" :class="getBGColor(getTotalByPattern(plays[2]))">{{getTotalByPattern(plays[2])}}</td>
                <td colspan="3" :class="getBGColor(getTotalByPattern(plays[3]))">{{getTotalByPattern(plays[3])}}</td>
-            </tr>
-
-            
+            </tr>            
           </table>
         </v-col>
       </v-row>
@@ -71,6 +62,14 @@ export default {
   },
 
   methods:{
+    getHourClass(index){
+      const hour = new Date().getHours();
+      if(index === hour){
+        return "evidence";
+      }
+
+      return "";
+    },
 
 getPlayDiff(plays, index){
   console.log(plays)
@@ -84,7 +83,6 @@ const property = index.toString().padStart(2, '0') + "_" + (index + 1).toString(
 
 plays.forEach(element => {
   if(element.id != "assertiveness"){
-  // console.log(element[property].difference);
   total += element[property].difference
   }
 });
@@ -107,12 +105,12 @@ getPatternCount(plays){
 
 getBGColor(value){
         if(value > 0)
-        return "greenBG";
+          return "greenBG";
 
-        else if(value < 0)
-        return "redBG";
+        if(value < 0)
+          return "redBG";
 
-        else return "grayBG";
+        return "grayBG";
       }
   }
 };
@@ -140,6 +138,10 @@ h2 {
 
 .redBG{
 background:#F24C4C;
+}
+
+.evidence{
+  border: 3px solid yellow;
 }
 
 .darkGrayBG{

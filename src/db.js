@@ -1,7 +1,7 @@
-import firebase from 'firebase/app'
-import 'firebase/firestore'
+import firebase from 'firebase/app';
+import "firebase/firestore";
 
-let firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyDLB27nWPHbrSNTwBNfaLit1N8Fn-me7j4",
   authDomain: "open-banking-open-source.firebaseapp.com",
   projectId: "open-banking-open-source",
@@ -11,11 +11,5 @@ let firebaseConfig = {
   measurementId: "G-47842PXB6F"
   };
 // Get a Firestore instance
-export const db = firebase
-  .initializeApp(firebaseConfig)
-  .firestore()
-
-  // Export types that exists in Firestore
-// This is not always necessary, but it's used in other examples
-const { Timestamp, GeoPoint } = firebase.firestore
-export { Timestamp, GeoPoint };
+const app = firebase.initializeApp(firebaseConfig);
+export const db = app.firestore();

@@ -1,4 +1,4 @@
-# house-stock-manager
+# blaze-patterns
 
 ## Project setup
 ```
