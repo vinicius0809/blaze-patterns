@@ -15,7 +15,7 @@ jobs:
         env:
           email: 'vinicius0809@gmail.com'
           username: 'vinicius0809'
-          access_token: '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'
+          access_token: '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'
         run: |
           git config --global credential.helper store
           echo "https://${access_token}:x-oauth-basic@github.com" > ~/.git-credentials
