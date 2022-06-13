@@ -16,7 +16,7 @@
             <tr >
               <th>Horário</th>
               <template v-for="i in 4">
-                <th :key="'acertos'+i">Acertos</th>
+                <th :key="'acertos'+ i">Acertos</th>
                 <th :key="'erros' + i">Erros</th>
                 <th :key="'diferenca' + i">Diferença</th>
               </template>
@@ -72,7 +72,6 @@ export default {
     },
 
 getPlayDiff(plays, index){
-  console.log(plays)
   const property = index.toString().padStart(2, '0') + "_" + (index + 1).toString().padStart(2, '0');
   return plays[property];
 },

@@ -73,7 +73,7 @@ export default {
     currentRoute: window.location.pathname,
   }),
   created() {
-    this.$vuetify.theme.dark = true;
+    // this.$vuetify.theme.dark = true;
     console.log(this.currentRoute);
   },
   methods: {
