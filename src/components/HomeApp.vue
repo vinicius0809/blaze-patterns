@@ -1,52 +1,219 @@
 <template>
-  <div id="app">
-  <label for="start-date">Data Início</label>
-  <input v-model="startDate" type="date" id="start-date"/>
-  <label for="end-date">Data Fim</label>
-  <input v-model="endDate" type="date" id="end-date"/>
-  <button class="search" @click="searchDataBase()">Filtrar</button>
-    <PatternPlays
-      :plays="plays"
-    ></PatternPlays>
+  <div id="home">
+    <div class="inputs">
+    <div class="start-date">
+      <label for="start-date"><strong>Data Início: </strong></label>
+      <input v-model="startDate" type="date" id="start-date" />
+    </div>
+    <div class="end-date">
+      <label for="end-date"><strong>Data Fim: </strong></label>
+      <input v-model="endDate" type="date" id="end-date" />
+    </div>
+    <div class="button-search">
+      <button @click="searchDataBase()" type="button">Filtrar</button>
+    </div>
   </div>
+  <div class="component">
+    <PatternPlays class="pattern-plays" :plays="plays"></PatternPlays>
+  </div>
+</div>
 </template>
 
 <script>
-import PatternPlays from "./PatternPlays";
-import { db } from "./../db.js";
-export default {
-  data() {
-    return {
-      plays: new Array(),
-      startDate: '',
-      endDate: ''
-    };
-  },
-  components: {
-    PatternPlays
-  },
-  methods:{
-    async searchDataBase(){
-      const dbRef =  db.collection("played-colors")
-      let result = [];
-      await dbRef
-      .where("timePlayed", ">=", this.startDate + "T00:00:00Z")
-      .where("timePlayed", "<=", this.endDate + "T23:59:59Z")
-      .get()
-      .then(querySnapshot => {
-        querySnapshot.forEach((doc) => {
-            // doc.data() is never undefined for query doc snapshots
-            result.push(doc.data());
+  /* eslint-disable */
+  import PatternPlays from "./PatternPlays";
+  import { db } from "./../db.js";
+  export default {
+    data() {
+      return {
+        plays: new Array(),
+        startDate: '',
+        endDate: ''
+      };
+    },
+    components: {
+      PatternPlays
+    },
+    methods: {
+      async searchDataBase() {
+        const dbRef = db.collection("played-colors")
+        let playedColors = [];
+        await dbRef
+          .where("timePlayed", ">=", this.startDate + "T03:00:00Z")
+          .where("timePlayed", "<=", this.getNextDay(this.getEndDate()) + "T02:59:59Z")
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach((doc) => {
+              playedColors.push(doc.data());
+            });
+          });
+
+        const groupedPlays = this.groupByPlays(playedColors);
+        const groupedAndAdjustedPlays = this.adjustPlays(groupedPlays);
+        const calculatedPlays = this.calculatePlays(groupedAndAdjustedPlays);
+        this.plays = calculatedPlays;
+      },
+      getEndDate() {
+        return this.endDate;//=== this.startDate ? this.getNextDay(this.endDate) : this.endDate;
+      },
+      getNextDay(dateStr) {
+        let date = new Date(dateStr);
+        date.setDate(date.getDate() + 2);
+        return "" + date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, '0') + "-" + date.getDate().toString().padStart(2, '0');
+      },
+      calculatePlays(groupedAndAdjustedPlays) {
+        let result = [];
+
+        groupedAndAdjustedPlays.forEach(groupedPlay => {
+          let obj = {};
+          for (let i = 0; i < 24; i++) {
+            const property = i.toString().padStart(2, '0') + "_" + (i + 1).toString().padStart(2, '0');
+            obj[property] = {
+              totalCorrect: 0,
+              wrongPlays: 0,
+              difference: 0
+            }
+          }
+
+          groupedPlay.forEach(play => {
+            const hour = this.getHourUtcMinus3(parseInt(play.plays[play.plays.length - 1].timePlayed.split("T")[1].split(":")[0]));
+            const prop = hour.toString().padStart(2, '0') + "_" + (parseInt(hour) + 1).toString().padStart(2, '0');
+            console.log(prop);
+            if (play.plays.find(p => p.correct === "SG" || p.correct === "G1" || p.correct === "G2" || p.correct === "G3")) {
+              obj[prop].totalCorrect++;
+            }
+            else {
+              obj[prop].wrongPlays += play.plays.length === 3 ? 7 : play.plays.length === 2 ? 3 : 1;
+            }
+            obj[prop].difference = obj[prop].totalCorrect - obj[prop].wrongPlays;
+          })
+
+          result.push(obj);
         });
-      })
-      console.log(result);
+        return result;
+      },
+      getHourUtcMinus3(hour) {
+        switch (hour) {
+          case 2:
+            return 23;
+            break;
+          case 1:
+            return 22;
+            break;
+          case 0:
+            return 21;
+            break;
+          default:
+            return hour - 3;
+            break;
+        }
+      },
+      adjustPlays(groupedPlays) {
+        let pvpvp = this.getAdjustedPlays(groupedPlays, 0);
+        let pvvppv = this.getAdjustedPlays(groupedPlays, 1);
+        let vpppv = this.getAdjustedPlays(groupedPlays, 2);
+        let vvvvv = this.getAdjustedPlays(groupedPlays, 3);
+        return [pvpvp, pvvppv, vpppv, vvvvv];
+      },
+      getAdjustedPlays(groupedPlays, index) {
+        let distinctPlays = [];
+        let arrayWithPlays = [];
+
+        groupedPlays[index].forEach(play => {
+          if (!distinctPlays.includes(play.playId)) {
+            distinctPlays.push(play.playId);
+          }
+        });
+
+        distinctPlays.forEach(distinctPlay => {
+          let objPlay = { playId: distinctPlay, plays: [] };
+          groupedPlays[index].forEach(play => {
+            if (play.playId === distinctPlay) {
+              objPlay.plays.push(play);
+            }
+          });
+          arrayWithPlays.push(objPlay);
+        });
+        return arrayWithPlays;
+      },
+      groupByPlays(playedColors) {
+        let pvpvp = [];
+        let pvvppv = [];
+        let vpppv = [];
+        let vvvvv = [];
+
+        playedColors.forEach(pc => {
+          switch (pc.patternName) {
+            case "PVPVP":
+            case "VPVPV":
+              pvpvp.push(pc);
+              break;
+
+            case "PVVPPV":
+            case "VPPVVP":
+              pvvppv.push(pc);
+              break;
+
+            case "VPPPV":
+            case "PVVVP":
+              vpppv.push(pc);
+              break;
+
+            case "VVVVV":
+            case "PPPPP":
+              vvvvv.push(pc);
+              break;
+
+            default:
+              break;
+          }
+        });
+        return [pvpvp, pvvppv, vpppv, vvvvv];
+      }
+    },
+    firestore: {
+      plays: db.collection("all-plays-assertiveness"),
     }
-  },
-  firestore:{
-    plays: db.collection("all-plays-assertiveness"),
-  }
-};
+  };
 </script>
 
 <style>
+  #home {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .inputs{
+    align-self: center;
+  }
+  .component{
+    grid-column-start: 2;
+    grid-column-end: 2;
+  }
+
+  .button-search {
+	box-shadow: 0px 10px 14px -7px #3e7327;
+	background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+	background-color:#77b55a;
+	border-radius:4px;
+	border:1px solid #4b8f29;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	font-weight:bold;
+	padding:6px 12px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #5b8a3c;
+}
+.button-search:hover {
+	background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
+	background-color:#72b352;
+}
+.button-search:active {
+	position:relative;
+	top:1px;
+}
 </style>
