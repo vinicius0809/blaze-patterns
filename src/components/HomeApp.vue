@@ -217,18 +217,13 @@
 <style>
   #home {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: flex-start;
   }
 
   .inputs {
     align-self: center;
-  }
-
-  .component {
-    grid-column-start: 2;
-    grid-column-end: 2;
   }
 
   .button-search {
