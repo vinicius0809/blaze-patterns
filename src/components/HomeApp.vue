@@ -54,7 +54,7 @@
         this.plays = calculatedPlays;
       },
       getEndDate() {
-        return this.endDate;//=== this.startDate ? this.getNextDay(this.endDate) : this.endDate;
+        return this.endDate === "" ? this.startDate : this.endDate;
       },
       getNextDay(dateStr) {
         let date = new Date(dateStr);
