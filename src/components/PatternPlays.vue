@@ -22,9 +22,9 @@
             <tr v-for="(n, index) in 24" :key="index" :class="getHourClass(index)">
               <td>{{index}}</td>
               <template v-for="play in plays">
-                <td class="darkGrayBG" :key="'totalCorrect' + play.name">{{getPlayDiff(play, index).totalCorrect}}</td>
-                <td class="darkGrayBG" :key="'wrongPlays' + play.name">{{getPlayDiff(play, index).wrongPlays}}</td>
-                <td :class="getBGColor(getPlayDiff(play, index).difference)" :key="'difference' + play.name">
+                <td class="darkGrayBG" :key="'totalCorrect' + play.id">{{getPlayDiff(play, index).totalCorrect}}</td>
+                <td class="darkGrayBG" :key="'wrongPlays' + play.id">{{getPlayDiff(play, index).wrongPlays}}</td>
+                <td :class="getBGColor(getPlayDiff(play, index).difference)" :key="'difference' + play.id">
                   {{getPlayDiff(play,
                   index).difference}}</td>
               </template>
@@ -32,7 +32,7 @@
             </tr>
             <tr>
               <td>Total</td>
-              <td v-for="play in plays" colspan="3" :key="'total' + play.name"
+              <td v-for="play in plays" colspan="3" :key="'total' + play.id"
                 :class="getBGColor(getTotalByPattern(play))">{{getTotalByPattern(play)}}</td>
             </tr>
           </table>
