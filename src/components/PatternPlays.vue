@@ -8,11 +8,11 @@
           <table>
             <tr>
               <th></th>
-              <th colspan="3" v-for="play in plays" :key="play.name">{{play.name}}</th>
+              <th colspan="3" v-for="play in plays" :key="play.id">{{play.id}}</th>
             </tr>
             <tr>
               <th>Horário</th>
-              <template v-for="i in (plays.length - 1)">
+              <template v-for="i in plays.length">
                 <th :key="'acertos'+ i">Acertos</th>
                 <th :key="'erros' + i">Erros</th>
                 <th :key="'diferenca' + i">Diferença</th>
@@ -21,7 +21,7 @@
             </tr>
             <tr v-for="(n, index) in 24" :key="index" :class="getHourClass(index)">
               <td>{{index}}</td>
-              <template v-for="play in plays.filter(p => p.id !== 'assertiveness')">
+              <template v-for="play in plays">
                 <td class="darkGrayBG" :key="'totalCorrect' + play.name">{{getPlayDiff(play, index).totalCorrect}}</td>
                 <td class="darkGrayBG" :key="'wrongPlays' + play.name">{{getPlayDiff(play, index).wrongPlays}}</td>
                 <td :class="getBGColor(getPlayDiff(play, index).difference)" :key="'difference' + play.name">
@@ -32,7 +32,7 @@
             </tr>
             <tr>
               <td>Total</td>
-              <td v-for="play in plays.filter(p => p.id !== 'assertiveness')" colspan="3" :key="'total' + play.name"
+              <td v-for="play in plays" colspan="3" :key="'total' + play.name"
                 :class="getBGColor(getTotalByPattern(play))">{{getTotalByPattern(play)}}</td>
             </tr>
           </table>
@@ -45,10 +45,15 @@
 <script>
   export default {
     props: {
-      plays: Array,
+      propPlays: Array,
     },
     data() {
-      return {};
+      return {
+        plays: new Array()
+      };
+    },
+    mounted(){
+      this.plays = this.propPlays.filter(p => p.id !== 'assertiveness');
     },
 
     methods: {

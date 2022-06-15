@@ -14,7 +14,7 @@
     </div>
   </div>
   <div class="component">
-    <PatternPlays class="pattern-plays" :plays="plays"></PatternPlays>
+    <PatternPlays class="pattern-plays" :propPlays="plays"></PatternPlays>
   </div>
 </div>
 </template>
