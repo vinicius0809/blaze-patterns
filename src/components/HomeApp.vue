@@ -1,22 +1,22 @@
 <template>
   <div id="home">
     <div class="inputs">
-    <div class="start-date">
-      <label for="start-date"><strong>Data Início: </strong></label>
-      <input v-model="startDate" type="date" id="start-date" />
+      <div class="start-date">
+        <label for="start-date"><strong>Data Início: </strong></label>
+        <input v-model="startDate" type="date" id="start-date" />
+      </div>
+      <div class="end-date">
+        <label for="end-date"><strong>Data Fim: </strong></label>
+        <input v-model="endDate" type="date" id="end-date" />
+      </div>
+      <div class="button-search">
+        <button @click="searchDataBase()" type="button">Filtrar</button>
+      </div>
     </div>
-    <div class="end-date">
-      <label for="end-date"><strong>Data Fim: </strong></label>
-      <input v-model="endDate" type="date" id="end-date" />
-    </div>
-    <div class="button-search">
-      <button @click="searchDataBase()" type="button">Filtrar</button>
+    <div class="component">
+      <PatternPlays class="pattern-plays" :propPlays="plays"></PatternPlays>
     </div>
   </div>
-  <div class="component">
-    <PatternPlays class="pattern-plays" :propPlays="plays"></PatternPlays>
-  </div>
-</div>
 </template>
 
 <script>
@@ -54,7 +54,7 @@
         this.plays = calculatedPlays;
       },
       getEndDate() {
-        return this.endDate === "" ? this.startDate : this.endDate;
+        return this.endDate === '' ? this.startDate : this.endDate;
       },
       getNextDay(dateStr) {
         let date = new Date(dateStr);
@@ -78,7 +78,6 @@
           groupedPlay.forEach(play => {
             const hour = this.getHourUtcMinus3(parseInt(play.plays[play.plays.length - 1].timePlayed.split("T")[1].split(":")[0]));
             const prop = hour.toString().padStart(2, '0') + "_" + (parseInt(hour) + 1).toString().padStart(2, '0');
-            console.log(prop);
             if (play.plays.find(p => p.correct === "SG" || p.correct === "G1" || p.correct === "G2" || p.correct === "G3")) {
               obj[prop].totalCorrect++;
             }
@@ -86,6 +85,7 @@
               obj[prop].wrongPlays += play.plays.length === 3 ? 7 : play.plays.length === 2 ? 3 : 1;
             }
             obj[prop].difference = obj[prop].totalCorrect - obj[prop].wrongPlays;
+            obj["id"] = play.plays[0].patternName;
           })
 
           result.push(obj);
@@ -109,11 +109,13 @@
         }
       },
       adjustPlays(groupedPlays) {
-        let pvpvp = this.getAdjustedPlays(groupedPlays, 0);
-        let pvvppv = this.getAdjustedPlays(groupedPlays, 1);
-        let vpppv = this.getAdjustedPlays(groupedPlays, 2);
-        let vvvvv = this.getAdjustedPlays(groupedPlays, 3);
-        return [pvpvp, pvvppv, vpppv, vvvvv];
+        let result = [];
+
+        for (let i = 0; i < groupedPlays.length ; i++) {
+          result.push(this.getAdjustedPlays(groupedPlays, i))
+        }
+
+        return result;
       },
       getAdjustedPlays(groupedPlays, index) {
         let distinctPlays = [];
@@ -129,6 +131,7 @@
           let objPlay = { playId: distinctPlay, plays: [] };
           groupedPlays[index].forEach(play => {
             if (play.playId === distinctPlay) {
+              play["id"] = play.patternName;
               objPlay.plays.push(play);
             }
           });
@@ -141,34 +144,68 @@
         let pvvppv = [];
         let vpppv = [];
         let vvvvv = [];
+        let outro = [];
 
         playedColors.forEach(pc => {
+          pc.patternName = this.getPatternName(pc.patternName);
           switch (pc.patternName) {
             case "PVPVP":
-            case "VPVPV":
               pvpvp.push(pc);
               break;
 
             case "PVVPPV":
-            case "VPPVVP":
               pvvppv.push(pc);
               break;
 
             case "VPPPV":
-            case "PVVVP":
               vpppv.push(pc);
               break;
 
             case "VVVVV":
-            case "PPPPP":
               vvvvv.push(pc);
               break;
 
             default:
+              outro.push(pc);
               break;
           }
         });
-        return [pvpvp, pvvppv, vpppv, vvvvv];
+        return [pvpvp, pvvppv, vpppv, outro, vvvvv];
+      },
+      
+      getPatternName(pattern){
+        let result = "";
+
+        switch (pattern) {
+          case "PVPVP":
+            case "VPVPV":
+              result = "PVPVP";
+              break;
+
+            case "PVVPPV":
+            case "VPPVVP":
+              result = "PVVPPV";
+              break;
+
+            case "VPPPV":
+            case "PVVVP":
+              result = "VPPPV";
+              break;
+
+            case "VVVVV":
+            case "PPPPP":
+              result = "VVVVV";
+              break;
+            case "VVPVVPVV":
+            case "PPVPPVPP":
+              result = "VVPVVPVV";
+              break;
+
+            default:
+              break;
+        }
+
+        return result;
       }
     },
     firestore: {
@@ -184,36 +221,40 @@
     justify-content: center;
     align-items: flex-start;
   }
-  .inputs{
+
+  .inputs {
     align-self: center;
   }
-  .component{
+
+  .component {
     grid-column-start: 2;
     grid-column-end: 2;
   }
 
   .button-search {
-	box-shadow: 0px 10px 14px -7px #3e7327;
-	background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
-	background-color:#77b55a;
-	border-radius:4px;
-	border:1px solid #4b8f29;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:13px;
-	font-weight:bold;
-	padding:6px 12px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #5b8a3c;
-}
-.button-search:hover {
-	background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
-	background-color:#72b352;
-}
-.button-search:active {
-	position:relative;
-	top:1px;
-}
+    box-shadow: 0px 10px 14px -7px #3e7327;
+    background: linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+    background-color: #77b55a;
+    border-radius: 4px;
+    border: 1px solid #4b8f29;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 12px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #5b8a3c;
+  }
+
+  .button-search:hover {
+    background: linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
+    background-color: #72b352;
+  }
+
+  .button-search:active {
+    position: relative;
+    top: 1px;
+  }
 </style>

@@ -8,7 +8,7 @@
           <table>
             <tr>
               <th></th>
-              <th colspan="3" v-for="play in plays" :key="play.id">{{play.id}}</th>
+              <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}}</th>
             </tr>
             <tr>
               <th>Horário</th>
@@ -22,9 +22,9 @@
             <tr v-for="(n, index) in 24" :key="index" :class="getHourClass(index)">
               <td>{{index}}</td>
               <template v-for="play in plays">
-                <td class="darkGrayBG" :key="'totalCorrect' + play.id">{{getPlayDiff(play, index).totalCorrect}}</td>
-                <td class="darkGrayBG" :key="'wrongPlays' + play.id">{{getPlayDiff(play, index).wrongPlays}}</td>
-                <td :class="getBGColor(getPlayDiff(play, index).difference)" :key="'difference' + play.id">
+                <td class="darkGrayBG" :key="'totalCorrect' + play.id + index">{{getPlayDiff(play, index).totalCorrect}}</td>
+                <td class="darkGrayBG" :key="'wrongPlays' + play.id+ index">{{getPlayDiff(play, index).wrongPlays}}</td>
+                <td :class="getBGColor(getPlayDiff(play, index).difference)" :key="'difference' + play.id+ index">
                   {{getPlayDiff(play,
                   index).difference}}</td>
               </template>
@@ -47,13 +47,10 @@
     props: {
       propPlays: Array,
     },
-    data() {
-      return {
-        plays: new Array()
-      };
-    },
-    mounted(){
-      this.plays = this.propPlays.filter(p => p.id !== 'assertiveness');
+     computed: {
+      plays(){
+        return this.propPlays.filter(p => p.id !== "assertiveness");
+      }
     },
 
     methods: {
@@ -71,7 +68,7 @@
 
         let result = plays[property];
 
-        return result ? result : {difference: 0, totalCorrect: 0, wrongPlays: 0};
+        return result ? result : { difference: 0, totalCorrect: 0, wrongPlays: 0 };
       },
 
       getTotalByHour(plays, index) {
@@ -99,13 +96,14 @@
       },
 
       getBGColor(value) {
+        let result = "grayBG";
+
         if (value > 0)
-          return "greenBG";
+          result = "greenBG";
+        else if (value < 0)
+          result = "redBG";
 
-        if (value < 0)
-          return "redBG";
-
-        return "grayBG";
+        return result;
       }
     }
   };
