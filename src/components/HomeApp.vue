@@ -22,7 +22,7 @@
 <script>
   /* eslint-disable */
   import PatternPlays from "./PatternPlays";
-  import { db } from "./../db.js";
+  import { realtimeDb, firestoreDb } from "./../db.js";
   export default {
     data() {
       return {
@@ -36,17 +36,36 @@
     },
     methods: {
       async searchDataBase() {
-        const dbRef = db.collection("played-colors")
+        const dbRef = firestoreDb.collection("played-colors");
+        const realtimeDbRef = realtimeDb.ref("played-colors");
         let playedColors = [];
-        await dbRef
-          .where("timePlayed", ">=", this.startDate + "T03:00:00Z")
-          .where("timePlayed", "<=", this.getNextDay(this.getEndDate()) + "T02:59:59Z")
-          .get()
-          .then(querySnapshot => {
-            querySnapshot.forEach((doc) => {
-              playedColors.push(doc.data());
+        const today = new Date();
+
+        if (this.startDate > '2022-06-22') {
+          await realtimeDbRef
+            .orderByChild('timePlayed')
+            .startAt(this.startDate + "T03:00:00Z")
+            .endAt(this.getNextDay(this.getEndDate()) + "T02:59:59Z")
+            .once('value', (snapshot) => {
+              snapshot.forEach((doc) => {
+                playedColors.push(doc.val());
+              });
             });
-          });
+            console.log("Consultou no realtime database")
+        }
+        else {
+          await dbRef
+            .where("timePlayed", ">=", this.startDate + "T03:00:00Z")
+            .where("timePlayed", "<=", this.getNextDay(this.getEndDate()) + "T02:59:59Z")
+            .get()
+            .then(querySnapshot => {
+              querySnapshot.forEach((doc) => {
+                playedColors.push(doc.data());
+              });
+            });
+            
+            console.log("Consultou no firestore")
+        }
 
         const groupedPlays = this.groupByPlays(playedColors);
         const groupedAndAdjustedPlays = this.adjustPlays(groupedPlays);
@@ -111,7 +130,7 @@
       adjustPlays(groupedPlays) {
         let result = [];
 
-        for (let i = 0; i < groupedPlays.length ; i++) {
+        for (let i = 0; i < groupedPlays.length; i++) {
           result.push(this.getAdjustedPlays(groupedPlays, i))
         }
 
@@ -172,44 +191,45 @@
         });
         return [pvpvp, pvvppv, vpppv, outro, vvvvv];
       },
-      
-      getPatternName(pattern){
+
+      getPatternName(pattern) {
         let result = "";
 
         switch (pattern) {
           case "PVPVP":
-            case "VPVPV":
-              result = "PVPVP";
-              break;
+          case "VPVPV":
+            result = "PVPVP";
+            break;
 
-            case "PVVPPV":
-            case "VPPVVP":
-              result = "PVVPPV";
-              break;
+          case "PVVPPV":
+          case "VPPVVP":
+            result = "PVVPPV";
+            break;
 
-            case "VPPPV":
-            case "PVVVP":
-              result = "VPPPV";
-              break;
+          case "VPPPV":
+          case "PVVVP":
+            result = "VPPPV";
+            break;
 
-            case "VVVVV":
-            case "PPPPP":
-              result = "VVVVV";
-              break;
-            case "VVPVVPVV":
-            case "PPVPPVPP":
-              result = "VVPVVPVV";
-              break;
+          case "VVVVV":
+          case "PPPPP":
+            result = "VVVVV";
+            break;
 
-            default:
-              break;
+          case "VVPVVPVV":
+          case "PPVPPVPP":
+            result = "VVPVVPVV";
+            break;
+
+          default:
+            break;
         }
 
         return result;
       }
     },
     firestore: {
-      plays: db.collection("all-plays-assertiveness"),
+      plays: firestoreDb.collection("all-plays-assertiveness"),
     }
   };
 </script>

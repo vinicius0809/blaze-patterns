@@ -1,4 +1,4 @@
-import firebase from 'firebase/app';
+import firebase from 'firebase';
 import "firebase/firestore";
 
 const firebaseConfig = {
@@ -6,10 +6,12 @@ const firebaseConfig = {
   authDomain: "open-banking-open-source.firebaseapp.com",
   projectId: "open-banking-open-source",
   storageBucket: "open-banking-open-source.appspot.com",
+  databaseURL: "https://open-banking-open-source-default-rtdb.firebaseio.com",
   messagingSenderId: "691278522719",
   appId: "1:691278522719:web:5e32f234fb907d76dbaeea",
   measurementId: "G-47842PXB6F"
   };
-// Get a Firestore instance
 const app = firebase.initializeApp(firebaseConfig);
-export const db = app.firestore();
+// Get a Firestore instance
+export const firestoreDb = app.firestore();
+export const realtimeDb = firebase.database();

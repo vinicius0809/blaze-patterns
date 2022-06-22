@@ -23,8 +23,8 @@
               <td>{{index}}</td>
               <template v-for="play in plays">
                 <td class="darkGrayBG" :key="'totalCorrect' + play.id + index">{{getPlayDiff(play, index).totalCorrect}}</td>
-                <td class="darkGrayBG" :key="'wrongPlays' + play.id+ index">{{getPlayDiff(play, index).wrongPlays}}</td>
-                <td :class="getBGColor(getPlayDiff(play, index).difference)" :key="'difference' + play.id+ index">
+                <td class="darkGrayBG" :key="'wrongPlays' + play.id + index">{{getPlayDiff(play, index).wrongPlays}}</td>
+                <td :class="getBGColor(getPlayDiff(play, index).difference)" :key="'difference' + play.id + index">
                   {{getPlayDiff(play,
                   index).difference}}</td>
               </template>
