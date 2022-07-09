@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="component">
-      <PatternPlays class="pattern-plays" :propPlays="plays"></PatternPlays>
+      <PatternPlays class="pattern-plays" :propPlays="plays" :playsStatus="playsStatus" :doubleResults="doubleResults"></PatternPlays>
     </div>
   </div>
 </template>
@@ -27,6 +27,8 @@
     data() {
       return {
         plays: new Array(),
+        playsStatus: new Array(),
+        doubleResults: [],
         startDate: '',
         endDate: ''
       };
@@ -226,10 +228,39 @@
         }
 
         return result;
+      },
+      async getLastColor(){
+        let lastResults = [];
+        setInterval(async ()=>{
+          if(lastResults.length === 10){
+            lastResults.shift();
+            await firestoreDb.collection("double-results").limit(1).orderBy("created_at", "desc").get().then(snapShot=> {
+              snapShot.forEach(r=>{
+                lastResults.push(r.data());
+              })
+            });
+            
+          }
+          else{
+            await firestoreDb.collection("double-results").limit(10).orderBy("created_at", "desc").get().then(snapShot=> {
+              snapShot.forEach(r=>{
+                lastResults.push(r.data());
+              })
+            });
+
+            lastResults.reverse();
+
+          }
+          this.doubleResults = lastResults;
+      }, 30000);
       }
     },
     firestore: {
       plays: firestoreDb.collection("all-plays-assertiveness"),
+      playsStatus: firestoreDb.collection("plays"),
+    },
+    async mounted(){
+      await this.getLastColor()
     }
   };
 </script>

@@ -4,11 +4,16 @@
       <v-row>
         <v-col></v-col>
         <v-col>
+
           <h2 style="text-align: center;">Jogadas</h2>
+          <table>
+            <th :class="getLastPlayBGColor(result.numero)" v-for="(result) in lastResults" :key="result.id">{{result.numero}}</th>
+            </table>
+
           <table>
             <tr>
               <th></th>
-              <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}}</th>
+              <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}} <br> {{sortArray(playsStatus[index].activeHours)}}</th>
             </tr>
             <tr>
               <th>Horário</th>
@@ -46,10 +51,16 @@
   export default {
     props: {
       propPlays: Array,
+      playsStatus: Array,
+      doubleResults: Array,
     },
      computed: {
       plays(){
         return this.propPlays.filter(p => p.id !== "assertiveness");
+      },
+
+      lastResults(){
+        return this.doubleResults;
       }
     },
 
@@ -63,6 +74,20 @@
         return "";
       },
 
+      sortArray(x){
+        const array = x;
+        array.sort((a,b) =>{
+          if(a < b)
+          return -1
+
+          else if(a > b) 
+          return 1
+
+          else return 0;
+        } );
+        return array;
+      },
+
       getPlayDiff(plays, index) {
         const property = index.toString().padStart(2, '0') + "_" + (index + 1).toString().padStart(2, '0');
 
@@ -70,6 +95,10 @@
 
         return result ? result : { difference: 0, totalCorrect: 0, wrongPlays: 0 };
       },
+
+      // getLastestPlays(){
+      //   const latestResults = doubleResult.slice(0, 10);
+      // },
 
       getTotalByHour(plays, index) {
         let total = 0;
@@ -104,6 +133,15 @@
           result = "redBG";
 
         return result;
+      },
+
+      getLastPlayBGColor(value){
+        if (value > 7 && value <= 14)
+          return "blackBG";
+        else if (value > 0 && value <= 7)
+          return "redBG";
+
+        else return "";
       }
     }
   };
@@ -135,6 +173,11 @@
     background: #F24C4C;
   }
 
+  .blackBG{
+    background: black;
+    color: white;
+  }
+
   .evidence {
     border: 3px solid yellow;
   }
@@ -146,4 +189,5 @@
   .grayBG {
     background: rgb(172, 171, 171);
   }
+
 </style>
