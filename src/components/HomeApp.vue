@@ -260,7 +260,7 @@
       playsStatus: firestoreDb.collection("plays"),
     },
     async mounted(){
-      await this.getLastColor()
+      // await this.getLastColor()
     }
   };
 </script>
