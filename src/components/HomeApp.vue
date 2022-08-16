@@ -114,20 +114,22 @@
         return result;
       },
       getHourUtcMinus3(hour) {
+        let result = 0;
         switch (hour) {
           case 2:
-            return 23;
+          result = 23;
             break;
           case 1:
-            return 22;
+          result = 22;
             break;
           case 0:
-            return 21;
+          result = 21;
             break;
           default:
-            return hour - 3;
+          result = hour - 3;
             break;
         }
+        return result;
       },
       adjustPlays(groupedPlays) {
         let result = [];
@@ -229,39 +231,39 @@
 
         return result;
       },
-      async getLastColor(){
-        let lastResults = [];
-        setInterval(async ()=>{
-          if(lastResults.length === 10){
-            lastResults.shift();
-            await firestoreDb.collection("double-results").limit(1).orderBy("created_at", "desc").get().then(snapShot=> {
-              snapShot.forEach(r=>{
-                lastResults.push(r.data());
-              })
-            });
+      // async getLastColor(){
+      //   let lastResults = [];
+      //   setInterval(async ()=>{
+      //     if(lastResults.length === 10){
+      //       lastResults.shift();
+      //       await firestoreDb.collection("double-results").limit(1).orderBy("created_at", "desc").get().then(snapShot=> {
+      //         snapShot.forEach(r=>{
+      //           lastResults.push(r.data());
+      //         })
+      //       });
             
-          }
-          else{
-            await firestoreDb.collection("double-results").limit(10).orderBy("created_at", "desc").get().then(snapShot=> {
-              snapShot.forEach(r=>{
-                lastResults.push(r.data());
-              })
-            });
+      //     }
+      //     else{
+      //       await firestoreDb.collection("double-results").limit(10).orderBy("created_at", "desc").get().then(snapShot=> {
+      //         snapShot.forEach(r=>{
+      //           lastResults.push(r.data());
+      //         })
+      //       });
 
-            lastResults.reverse();
+      //       lastResults.reverse();
 
-          }
-          this.doubleResults = lastResults;
-      }, 30000);
-      }
+      //     }
+      //     this.doubleResults = lastResults;
+      // }, 30000);
+      // }
     },
     firestore: {
       plays: firestoreDb.collection("all-plays-assertiveness"),
       playsStatus: firestoreDb.collection("plays"),
     },
-    async mounted(){
-      // await this.getLastColor()
-    }
+    // async mounted(){
+    //    await this.getLastColor()
+    // }
   };
 </script>
 
