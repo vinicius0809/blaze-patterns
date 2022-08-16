@@ -146,7 +146,7 @@
 <style>
   td,
   th {
-    border: 1px solid #dddddd;
+    border: 1px solid black;
     padding: 8px;
   }
 
@@ -175,7 +175,7 @@
   }
 
   .evidence {
-    border: 3px solid yellow;
+    border: 3px solid blue;
   }
 
   .darkGrayBG {

@@ -257,16 +257,11 @@
       }
     },
     firestore: {
-      plays: firestoreDb.collection("all-plays-assertiveness")
+      plays: firestoreDb.collection("all-plays-assertiveness"),
+      playsStatus: firestoreDb.collection("plays")
     },
     created(){
        this.getLastColor();
-       firestoreDb.collection("plays")
-            .get().then((snapshot) => {
-              snapshot.forEach((doc) => {
-                this.playsStatus.push(doc.data());
-              });
-            });
     }
   };
 </script>
