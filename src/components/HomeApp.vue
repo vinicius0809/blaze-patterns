@@ -251,7 +251,6 @@
             });
 
             lastResults.reverse();
-
           }
           this.doubleResults = lastResults;
       }, 30000);
@@ -260,8 +259,8 @@
     firestore: {
       plays: firestoreDb.collection("all-plays-assertiveness")
     },
-    async created(){
-       await this.getLastColor();
+    created(){
+       this.getLastColor();
        firestoreDb.collection("plays")
             .get().then((snapshot) => {
               snapshot.forEach((doc) => {
