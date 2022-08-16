@@ -13,7 +13,7 @@
           <table>
             <tr>
               <th></th>
-              <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}} <br> {{sortArray(playsStatus[index].activeHours)}}</th>
+              <!-- <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}} <br> {{sortArray(playsStatus[index].activeHours)}}</th> -->
             </tr>
             <tr>
               <th>Horário</th>

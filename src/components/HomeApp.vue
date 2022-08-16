@@ -259,7 +259,7 @@
     },
     firestore: {
       plays: firestoreDb.collection("all-plays-assertiveness"),
-      playsStatus: firestoreDb.collection("plays"),
+      // playsStatus: firestoreDb.collection("plays"),
     },
     // async mounted(){
     //    await this.getLastColor()
