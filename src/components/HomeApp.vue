@@ -231,39 +231,44 @@
 
         return result;
       },
-      // async getLastColor(){
-      //   let lastResults = [];
-      //   setInterval(async ()=>{
-      //     if(lastResults.length === 10){
-      //       lastResults.shift();
-      //       await firestoreDb.collection("double-results").limit(1).orderBy("created_at", "desc").get().then(snapShot=> {
-      //         snapShot.forEach(r=>{
-      //           lastResults.push(r.data());
-      //         })
-      //       });
+      async getLastColor(){
+        let lastResults = [];
+        setInterval(async ()=>{
+          if(lastResults.length === 10){
+            lastResults.shift();
+            await firestoreDb.collection("double-results").limit(1).orderBy("created_at", "desc").get().then(snapShot=> {
+              snapShot.forEach(r=>{
+                lastResults.push(r.data());
+              })
+            });
             
-      //     }
-      //     else{
-      //       await firestoreDb.collection("double-results").limit(10).orderBy("created_at", "desc").get().then(snapShot=> {
-      //         snapShot.forEach(r=>{
-      //           lastResults.push(r.data());
-      //         })
-      //       });
+          }
+          else{
+            await firestoreDb.collection("double-results").limit(10).orderBy("created_at", "desc").get().then(snapShot=> {
+              snapShot.forEach(r=>{
+                lastResults.push(r.data());
+              })
+            });
 
-      //       lastResults.reverse();
+            lastResults.reverse();
 
-      //     }
-      //     this.doubleResults = lastResults;
-      // }, 30000);
-      // }
+          }
+          this.doubleResults = lastResults;
+      }, 30000);
+      }
     },
     firestore: {
-      plays: firestoreDb.collection("all-plays-assertiveness"),
-      // playsStatus: firestoreDb.collection("plays"),
+      plays: firestoreDb.collection("all-plays-assertiveness")
     },
-    // async mounted(){
-    //    await this.getLastColor()
-    // }
+    async created(){
+       await this.getLastColor();
+       firestoreDb.collection("plays")
+            .get().then((snapshot) => {
+              snapshot.forEach((doc) => {
+                this.playsStatus.push(doc.data());
+              });
+            });
+    }
   };
 </script>
 

@@ -5,15 +5,15 @@
         <v-col></v-col>
         <v-col>
 
-          <!-- <h2 style="text-align: center;">Jogadas</h2>
+          <h2 style="text-align: center;">Jogadas</h2>
           <table>
             <th :class="getLastPlayBGColor(result.numero)" v-for="(result) in lastResults" :key="result.id">{{result.numero}}</th>
-            </table> -->
+            </table>
 
           <table>
             <tr>
               <th></th>
-              <!-- <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}} <br> {{sortArray(playsStatus[index].activeHours)}}</th> -->
+              <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}} <br> {{sortArray(playsStatus[index].activeHours)}}</th>
             </tr>
             <tr>
               <th>Horário</th>
@@ -95,10 +95,6 @@
 
         return result ? result : { difference: 0, totalCorrect: 0, wrongPlays: 0 };
       },
-
-      // getLastestPlays(){
-      //   const latestResults = doubleResult.slice(0, 10);
-      // },
 
       getTotalByHour(plays, index) {
         let total = 0;
