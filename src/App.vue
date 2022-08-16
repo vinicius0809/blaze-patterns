@@ -23,6 +23,8 @@ export default {
     currentRoute: window.location.pathname,
   }),
   created() {
+    // eslint-disable-next-line
+    if (!window.console) console = {log: function() {}}; 
     // this.$vuetify.theme.dark = true;
   },
   methods: {    
