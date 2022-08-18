@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <v-container>
+    <v-container class="container">
       <v-row>
         <v-col></v-col>
         <v-col>
@@ -13,7 +13,7 @@
           <table>
             <tr>
               <th></th>
-              <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}} <br> {{sortArray(playsStatus[index].activeHours)}}</th>
+              <th colspan="3" v-for="(play, index) in plays" :key="play.id + index">{{play.id}}</th>
             </tr>
             <tr>
               <th>Horário</th>

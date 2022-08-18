@@ -14,7 +14,8 @@
       </div>
     </div>
     <div class="component">
-      <PatternPlays class="pattern-plays" :propPlays="plays" :playsStatus="playsStatus" :doubleResults="doubleResults"></PatternPlays>
+      <ActiveHours :playsStatus="playsStatus"/>  
+        <PatternPlays class="pattern-plays" :propPlays="plays" :doubleResults="doubleResults"></PatternPlays>
     </div>
   </div>
 </template>
@@ -22,6 +23,7 @@
 <script>
   /* eslint-disable */
   import PatternPlays from "./PatternPlays";
+  import ActiveHours from "./ActiveHours";
   import { realtimeDb, firestoreDb } from "./../db.js";
   export default {
     data() {
@@ -34,9 +36,10 @@
       };
     },
     components: {
+      ActiveHours,
       PatternPlays
     },
-    methods: {
+    methods: {       
       async searchDataBase() {
         const dbRef = firestoreDb.collection("played-colors");
         const realtimeDbRef = realtimeDb.ref("played-colors");
