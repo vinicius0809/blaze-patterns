@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="component">
-      <ActiveHours :playsStatus="playsStatus"/>  
+      <!-- <ActiveHours :playsStatus="playsStatus"/>   -->
         <PatternPlays class="pattern-plays" :propPlays="plays" :doubleResults="doubleResults"></PatternPlays>
     </div>
   </div>
@@ -261,10 +261,10 @@
     },
     firestore: {
       plays: firestoreDb.collection("all-plays-assertiveness"),
-      playsStatus: firestoreDb.collection("plays")
+      // playsStatus: firestoreDb.collection("plays")
     },
     created(){
-       this.getLastColor();
+      //  this.getLastColor();
     }
   };
 </script>

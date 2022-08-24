@@ -5,10 +5,10 @@
         <v-col></v-col>
         <v-col>
 
-          <h2 style="text-align: center;">Jogadas</h2>
+          <!-- <h2 style="text-align: center;">Jogadas</h2>
           <table>
             <th :class="getLastPlayBGColor(result.numero)" v-for="(result) in lastResults" :key="result.id">{{result.numero}}</th>
-            </table>
+            </table> -->
 
           <table>
             <tr>
