@@ -1,7 +1,7 @@
 <template>
   <div id="home">
-    <div class="inputs">
-      <div class="start-date">
+    <!-- <div class="inputs"> -->
+      <!-- <div class="start-date">
         <label for="start-date"><strong>Data Início: </strong></label>
         <input v-model="startDate" type="date" id="start-date" />
       </div>
@@ -11,11 +11,13 @@
       </div>
       <div class="button-search">
         <button @click="searchDataBase()" type="button">Filtrar</button>
-      </div>
-    </div>
+      </div> -->
+    <!-- </div> -->
     <div class="component">
+      <CrashLists></CrashLists>
+       <DoubleLists></DoubleLists>
       <!-- <ActiveHours :playsStatus="playsStatus"/>   -->
-        <PatternPlays class="pattern-plays" :propPlays="plays" :doubleResults="doubleResults"></PatternPlays>
+        <!-- <PatternPlays class="pattern-plays" :propPlays="plays" :doubleResults="doubleResults"></PatternPlays> -->
     </div>
   </div>
 </template>
@@ -24,6 +26,8 @@
   /* eslint-disable */
   import PatternPlays from "./PatternPlays";
   import ActiveHours from "./ActiveHours";
+  import CrashLists from "./CrashLists";
+  import DoubleLists from "./DoubleLists";
   import { realtimeDb, firestoreDb } from "./../db.js";
   export default {
     data() {
@@ -37,6 +41,8 @@
     },
     components: {
       ActiveHours,
+      CrashLists,
+      DoubleLists,
       PatternPlays
     },
     methods: {       
