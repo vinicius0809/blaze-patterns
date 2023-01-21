@@ -302,7 +302,7 @@ export default {
                 }
             });
             this.listMinutes5x.forEach(x5 => {
-                const obj = { possibleValue: 5, date: x5 }
+                const obj = { possibleValue: 4, date: x5 }
                 resultList5x.push(obj);
 
                 let exists = false;
@@ -320,7 +320,7 @@ export default {
                 }
             });
             this.listMinutes10x.forEach(x10 => {
-                const obj = { possibleValue: 10, date: x10 }
+                const obj = { possibleValue: 7, date: x10 }
                 resultList10x.push(obj);
 
                 let exists = false;
@@ -343,7 +343,7 @@ export default {
                 }
             });
             this.listMinutes20x.forEach(x20 => {
-                const obj = { possibleValue: 20, date: x20 }
+                const obj = { possibleValue: 10, date: x20 }
                 resultList20x.push(obj);
 
                 let exists = false;
@@ -418,15 +418,15 @@ export default {
                 let possibleValue = 3;
 
                 if (min.includes("(5x)")) {
-                    possibleValue = 5;
+                    possibleValue = 4;
                     min = min.replace("(5x)", "");
                 }
                 else if (min.includes("(10x)")) {
-                    possibleValue = 10;
+                    possibleValue = 6;
                     min = min.replace("(10x)", "");
                 }
                 else if (min.includes("(20x)")) {
-                    possibleValue = 20;
+                    possibleValue = 10;
                     min = min.replace("(20x)", "");
                 }
                 else if (min.includes("(50x)")) {
