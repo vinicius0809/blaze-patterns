@@ -45,7 +45,7 @@
         doubleResults: new Array(),
         startDate: '',
         endDate: '',
-        lastHours: 2,
+        lastHours: 1,
         groupedData:  new Array(),
         result: new Array()
       };

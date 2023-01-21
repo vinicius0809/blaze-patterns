@@ -73,8 +73,8 @@ function calculateTrendFromGroup(groupedData, n = 5) {
 
 function getGroupedData(result){
     let groupedDataLocal = groupByHourAndMinute(result, 5);
-    groupedDataLocal = calculateMovingAverageFromGroup(groupedDataLocal, 7);
-    groupedDataLocal = calculateTrendFromGroup(groupedDataLocal, 3);
+    groupedDataLocal = calculateMovingAverageFromGroup(groupedDataLocal, 5);
+    groupedDataLocal = calculateTrendFromGroup(groupedDataLocal, 2);
 
     return groupedDataLocal;
 }
