@@ -1,7 +1,7 @@
 <template>
   <div id="home">
-    <div class="inputs">
-      <div class="start-date">
+    <!-- <div class="inputs"> -->
+      <!-- <div class="start-date">
         <label for="start-date"><strong>Data Início: </strong></label>
         <input v-model="startDate" type="date" id="start-date" />
       </div>
@@ -11,11 +11,19 @@
       </div>
       <div class="button-search">
         <button @click="searchDataBase()" type="button">Filtrar</button>
-      </div>
-    </div>
+      </div> -->
+    <!-- </div> -->
     <div class="component">
+      <CrashGraph :groupedData="groupedData" :originalResult="result"></CrashGraph>
+      <div>
+        <label> Horas para visualizar: </label>
+        <input type="number" max="12" v-model="lastHours">
+        <button @click="setGroupedDate()">Atualizar</button>
+      </div>
+      <!-- <CrashLists></CrashLists> -->
+       <!-- <DoubleLists></DoubleLists> -->
       <!-- <ActiveHours :playsStatus="playsStatus"/>   -->
-        <PatternPlays class="pattern-plays" :propPlays="plays" :doubleResults="doubleResults"></PatternPlays>
+        <!-- <PatternPlays class="pattern-plays" :propPlays="plays" :doubleResults="doubleResults"></PatternPlays> -->
     </div>
   </div>
 </template>
@@ -24,19 +32,29 @@
   /* eslint-disable */
   import PatternPlays from "./PatternPlays";
   import ActiveHours from "./ActiveHours";
+  import CrashLists from "./CrashLists";
+  import CrashGraph from "./CrashGraph";
+  import DoubleLists from "./DoubleLists";
   import { realtimeDb, firestoreDb } from "./../db.js";
+  import {getGroupedData} from "./../util.js";
   export default {
     data() {
       return {
         plays: new Array(),
         playsStatus: new Array(),
-        doubleResults: [],
+        doubleResults: new Array(),
         startDate: '',
-        endDate: ''
+        endDate: '',
+        lastHours: 2,
+        groupedData:  new Array(),
+        result: new Array()
       };
     },
     components: {
       ActiveHours,
+      CrashLists,
+      CrashGraph,
+      DoubleLists,
       PatternPlays
     },
     methods: {       
@@ -234,6 +252,25 @@
 
         return result;
       },
+      async setGroupedDate(){
+        const today = new Date();
+      const dateWithoutTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), today.getHours() - this.lastHours, today.getMinutes(), today.getSeconds());
+
+     await realtimeDb.ref("crash-results")
+                    .orderByChild('created_at')
+                    .startAt(dateWithoutTime.toISOString())
+                    .get()
+                    .then((snapshot) => {
+                        snapshot.forEach((doc) => {
+                          this.result.push(doc.val());
+                        });
+                    })
+                    .then(() => {
+                  this.result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                });
+                
+      this.groupedData = getGroupedData(this.result);
+      },
       async getLastColor(){
         let lastResults = [];
         setInterval(async ()=>{
@@ -263,8 +300,8 @@
       plays: firestoreDb.collection("all-plays-assertiveness"),
       // playsStatus: firestoreDb.collection("plays")
     },
-    created(){
-      //  this.getLastColor();
+    async mounted(){
+      await this.setGroupedDate();
     }
   };
 </script>
