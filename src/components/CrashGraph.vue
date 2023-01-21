@@ -42,12 +42,14 @@ export default {
             .get()
             .then((snapshot) => {
               snapshot.forEach((doc) => {
-                this.result.shift();
                 this.result.push(doc.val());
               })              
             })
             .then(() => {
                   this.result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                  const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000); // 2 hours in milliseconds
+                  this.result = this.result.filter(item => new Date(item.created_at) >= twoHoursAgo);
+                
                 });
                 
           this.groupedDataLocal = getGroupedData(this.result)
