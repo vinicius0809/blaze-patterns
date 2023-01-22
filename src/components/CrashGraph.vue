@@ -67,31 +67,21 @@ export default {
         type: 'line',
         data: {
           labels: this.groupedDataLocal.map(d => d.dateTime),
-          datasets: [{
-            //     label: 'Max Crash Point',
-            //     data: this.groupedDataLocal.map(d => d.crashPoint),
-            //     backgroundColor: 'rgba(255, 99, 132, 0.2)',
-            //     borderColor: 'rgba(255, 99, 132, 1)',
-            //     borderWidth: 1,            
-            //     trendlineLinear: {
-            //       style: 'rgba(255, 0, 0, 1)',
-            //       width: 2
-            //     },
-            // },
-            // {
-            //     label: 'Média móvel de todos os resultados do minuto',
-            //     data: this.groupedDataLocal.map(d => d.movingAverage),
-            //     backgroundColor: 'blue',
-            //     borderWidth: 1,
-            //     type: 'line',
-            //     pointRadius: 0,
-            //     fill: false,
-            //     lineTension: 0,
-            //     borderDash: [8, 4],
-            //     borderColor: "blue",
-            //     pointStyle: "rectRounded"
-            // },
-            //   {
+          datasets: [
+            {
+                label: 'Média móvel de todos os resultados do minuto',
+                data: this.groupedDataLocal.map(d => d.movingAverageFromMovAvg),
+                backgroundColor: 'blue',
+                borderWidth: 1,
+                type: 'line',
+                pointRadius: 0,
+                fill: false,
+                lineTension: 0,
+                borderDash: [8, 4],
+                borderColor: "blue",
+                pointStyle: "rectRounded"
+            },
+              {
             label: 'Média móvel dos maiores resultados do minuto',
             data: this.groupedDataLocal.map(d => d.movingAverageFromGroup),
             backgroundColor: 'black',
