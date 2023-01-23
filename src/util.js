@@ -1,7 +1,28 @@
 function groupByHourAndMinute(data, windowSize) {
     const maxCrashPoint = 20;
-    let groupedData = [];
+    let groupedData = {};
 
+    data = addMissingValues(data);
+    data = sortData(data);
+
+    let maxCrashPointMinute = -1;
+    let maxCrashPointMinuteKey = "";
+    for (let i = 0; i < data.length; i++) {
+        let item = data[i];
+        item.crash_point = limitCrashPoint(item.crash_point, maxCrashPoint);
+        const key = createKey(item.hora, item.minuto);
+        if (!groupedData[key]) {
+            groupedData[key] = createNewGroupedDataEntry(item);
+        }
+        maxCrashPointMinuteKey = storeMaxCrashPoint(maxCrashPointMinute, maxCrashPointMinuteKey, item, key);
+        updateCrashPoint(data, i, groupedData, maxCrashPointMinute, maxCrashPointMinuteKey, item);
+        updateWindow(groupedData, key, item.crash_point, windowSize);
+    }
+
+    return Object.values(groupedData);
+}
+
+function addMissingValues(data) {
     let missingValues = [];
     for (let i = 1; i < data.length; i++) {
         let current = data[i];
@@ -16,53 +37,63 @@ function groupByHourAndMinute(data, windowSize) {
             }
         }
     }
-    console.log(missingValues);
-
     missingValues.forEach(mv => {
         data.push(mv);
-    })
-    
-    data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-    data.forEach(item => {
-        // Limit crashPoint to maxCrashPoint
-        item.crash_point = Math.min(item.crash_point, maxCrashPoint);
-        // Convert crash_point to double
-        item.crash_point = parseFloat(item.crash_point);
-        // Get hour and minute
-        const hour = item.hora;
-        const minute = item.minuto;
-        // Create key for grouped data
-        const key = `${hour}:${minute}`;
-        // If key doesn't exist, create new entry
-        let adjustedDate = new Date(item.created_at);
-        adjustedDate.setSeconds(0);
-        adjustedDate.setMilliseconds(0);
-        adjustedDate.setHours(adjustedDate.getHours() - 3);
-        if (!groupedData[key]) {
-            groupedData[key] = {
-                crashPoint: item.crash_point,
-                dateTime: adjustedDate.toISOString().replace(":00.000Z", "").replace("T", " ").substring(5),
-                movingAverage: 0,
-                window: []
-            };
-        }
-        //add current crash_point to window
-        groupedData[key].window.push(item.crash_point);
-        //if window is bigger than the size of the window, remove the first element
-        if (groupedData[key].window.length > windowSize) {
-            groupedData[key].window.shift();
-        }
-        //calculate moving average
-        groupedData[key].movingAverage = groupedData[key].window.reduce((acc, val) => acc + val, 0) / groupedData[key].window.length;
-        // If key exists, update crashPoint if necessary
-        if (item.crash_point > groupedData[key].crashPoint) {
-            groupedData[key].crashPoint = item.crash_point;
-            groupedData[key].dateTime = adjustedDate.toISOString().replace(":00.000Z", "").replace("T", " ").substring(5);
-        }
     });
+    return data;
+}
 
-    return Object.values(groupedData);
+function sortData(data) {
+    data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    return data;
+}
+
+function limitCrashPoint(crashPoint, maxCrashPoint) {
+    return Math.min(crashPoint, maxCrashPoint);
+}
+
+function createKey(hour, minute) {
+    return `${hour}:${minute}`;
+}
+
+function storeMaxCrashPoint(maxCrashPointMinute, maxCrashPointMinuteKey, item, key) {
+    if (item.crash_point > maxCrashPointMinute) {
+        maxCrashPointMinute = item.crash_point;
+        maxCrashPointMinuteKey = key;
+    }
+    return maxCrashPointMinuteKey;
+}
+
+function updateCrashPoint(data, i, groupedData, maxCrashPointMinute, maxCrashPointMinuteKey, item) {
+    if (i < data.length - 1) {
+        let nextItem = data[i+1];
+        if (nextItem.minuto !== item.minuto && nextItem.hora !== item.hora) {
+            groupedData[maxCrashPointMinuteKey].crashPoint = maxCrashPointMinute;
+            maxCrashPointMinute = -1;
+            maxCrashPointMinuteKey = "";
+        }
+    }
+}
+
+function updateWindow(groupedData, key, crashPoint, windowSize) {
+    groupedData[key].window.push(crashPoint);
+    if (groupedData[key].window.length > windowSize) {
+        groupedData[key].window.shift();
+    }
+    groupedData[key].movingAverage = groupedData[key].window.reduce((acc, val) => acc + val, 0) / groupedData[key].window.length;
+}
+
+function createNewGroupedDataEntry(item) {
+    let adjustedDate = new Date(item.created_at);
+    adjustedDate.setSeconds(0);
+    adjustedDate.setMilliseconds(0);
+    adjustedDate.setHours(adjustedDate.getHours() - 3);
+    return {
+        crashPoint: item.crash_point,
+        dateTime: adjustedDate.toISOString().replace(":00.000Z", "").replace("T", " ").substring(5),
+        movingAverage: 0,
+        window: []
+    };
 }
 
 function calculateMovingAverageFromGroup(groupedData, windowSize) {
